@@ -21,7 +21,7 @@ export default class Index extends Page {
                   <div key={k} className="item">
                     <div className="article-header">
                       <a className="article-title">{v.title}</a>
-                      <span className="article-author">时间：{v.createTime}</span>
+                      <span className="article-author">{v.createTime}</span>
                     </div>
                     <div className="article-info">
                       <p>{v.summary}</p>
