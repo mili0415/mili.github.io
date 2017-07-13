@@ -10,7 +10,6 @@ import styles from './index.styl'
 class LeftMenu extends Page {
   render () {
     const {curUrl} = this.props
-    console.log(curUrl)
     return (
       <aside>
         <div id="sidebar"  className="nav-collapse ">
