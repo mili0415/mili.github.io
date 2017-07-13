@@ -21,37 +21,16 @@
 </head>
 <body>
   <header class="header black-bg">
-    <div class="sidebar-toggle-box">
-      <div class="fa fa-bars tooltips" data-placement="right">
-        导航
-      </div>
-    </div>
-    <a href="index.html" class="logo"><b>YYM</b></a>
+
+    <a href="index.html" class="logo"><b>YangYanmin</b></a>
     <div class="top-menu">
       <ul class="nav pull-right top-menu">
-        <li><a class="logout" href="login.html">Weibo</a></li>
-        <li><a class="logout" href="login.html">GitHub</a></li>
+        <li><a class="logout" href="http://weibo.com/u/2317769027/home" target="_blankgit">Weibo</a></li>
+        <li><a class="logout" href="https://github.com/mili0415" target="_blankgit">GitHub</a></li>
       </ul>
     </div>
   </header>
-  <aside>
-    <div id="sidebar"  class="nav-collapse ">
-      <ul class="sidebar-menu" id="nav-accordion">
-        <p class="centered"><a href="profile.html"><img src="resources/ui-sam.jpg" class="img-circle" width="60"></a></p>
-        <h5 class="centered">呵呵哒</h5>
-        <li class="mt">
-          <a class="active" href="/#">
-            <span>首页</span>
-          </a>
-        </li>
-        <li class="mt">
-          <a href="#/list">
-            <span>列表</span>
-          </a>
-        </li>
-      </ul>
-    </div>
-  </aside>
+
   <div id="<%= htmlWebpackPlugin.options.appMountId || 'app'%>"></div>
   <% if (htmlWebpackPlugin.options.appMountIds && htmlWebpackPlugin.options.appMountIds.length > 0) { %>
     <% for (var index in htmlWebpackPlugin.options.appMountIds) { %>
@@ -61,8 +40,8 @@
   <footer class="site-footer">
     <div class="text-center">
       2017 - YYM
-      <a href="index.html#" class="go-top">
-        <i class="fa fa-angle-up"></i>
+      <a href="#" class="go-top">
+        <span>^</span>
       </a>
     </div>
   </footer>

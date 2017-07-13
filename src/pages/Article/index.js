@@ -6,10 +6,10 @@
 
 import { React, Page } from 'zola'
 import fetch from 'utils/fetch'
-import showdown from 'showdown'
+import articleList from 'data/article'
+import highlight from 'highlight.js'
+import LeftMenu from '../LeftMenu'
 import styles from './index.styl'
-
-const converter = new showdown.Converter();
 
 export default class extends Page {
 
@@ -24,52 +24,54 @@ export default class extends Page {
     }
   }
 
-  getArticleInfo(data){
-    let obj = {};
-        data = data.substring(3, data.length - 3);
-    const arr = data.split("\n");
-    arr.forEach(v => {
-      if(!!v.trim()){
-        const temp = v.split(":");
-        obj[temp[0].trim()] = temp[1].trim();
-      }
-    })
-    return obj;
-  }
-
   componentDidMount() {
-    let {params} = this.props;
-    let {path} = params;
-
-    fetch(`/article/${path}.md`, {text: true})
-      .then(data => {
-        const start = data.indexOf("---");
-        const end = data.indexOf("---", start+3) + 3;
-        const substring = data.substring(start, end);
-        const {author, createTime, title} = this.getArticleInfo(substring);
-
-        data = data.replace(substring, "")
-        this.setState({content: converter.makeHtml(data), author, createTime, title})
-      })
+    let {params} = this.props
+    let {path} = params
+    let article = articleList.find(v => v.filename == path)
+    article.component().then(content => {
+      this.setState({
+        content,
+        author: article.author,
+        createTime: article.createTime,
+        title: article.title,
+        tags: article.tags || []
+      });
+    });
+    this.setState({pageTitle: document.title});
+    document.title = article.title;
+  }
+  componentWillUnmount() {
+    document.title = this.state.pageTitle;
+  }
+  componentDidUpdate(prevProps, prevState) {
+    var blocks = Array.from(document.querySelectorAll('pre code'));
+    blocks.forEach(block => highlight.highlightBlock(block));
   }
 
   render () {
-    let {content, author, createTime, title, tags} = this.state;
+    let {content, author, createTime, title, tags} = this.state
     return (
-      <section id="main-content">
-        <section className="wrapper">
-          <h1>{title}</h1>
-          <div className="author">
-            <span>{author},   {createTime}</span>
-          </div>
-          <div className="article-tags">
-            {
-              tags.map(v => <span>{v}</span>)
-            }
-          </div>
-          <div dangerouslySetInnerHTML={{__html: content}}></div>
-        </section>
-      </section>
+      <div className="article">
+        <LeftMenu curUrl="list" />
+        {
+          !!content
+          ?  <section id="main-content">
+              <section className="wrapper">
+                <h1>{title}</h1>
+                <div className="author">
+                  <span>{author},   {createTime}</span>
+                </div>
+                <div className="article-tags">
+                  {
+                    tags.map(v => <span>{v}</span>)
+                  }
+                </div>
+                <div dangerouslySetInnerHTML={{__html: content}}></div>
+              </section>
+            </section>
+          : null
+        }
+      </div>
     )
   }
 }

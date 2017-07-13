@@ -1,3 +1,4 @@
+/*获取所有mockdown数据 */
 const fs = require('fs')
 const path = require('path')
 const summarize = require('summarize-markdown')
@@ -6,7 +7,7 @@ const ARTICLE_PATH = path.join(__dirname, '..', 'article');
 
 const getAllMarkdownFile = function(filePath){
 
-  //1.挨个查找文件
+  //1.查找文件
   function walkFile(filePath, callback){
     let result = [];
     const stat = fs.statSync(filePath);
@@ -44,8 +45,7 @@ const getAllMarkdownFile = function(filePath){
 
     const start = content.indexOf("---");
     const end = content.indexOf("---", start+3) + 3;
-    let header = content.substring(start, end),
-        obj = {};
+    let header = content.substring(start, end), obj = {};
 
     content = summarize(content.replace(header, ""))
               .substring(0, 300);
@@ -60,9 +60,11 @@ const getAllMarkdownFile = function(filePath){
     })
 
     const filename = path.basename(mdPath, ".md");
+    const filepath = path.basename(mdPath);
 
     return Object.assign(obj, {
       filename,
+      path: filepath,
       summary: `${content}...`
     })
   })
@@ -76,8 +78,5 @@ const getAllMarkdownFile = function(filePath){
 module.exports = function(redskull, env){
 
   const list = getAllMarkdownFile(ARTICLE_PATH);
-
-  return {
-    MY_ARTICLE_DATA: JSON.stringify(list)
-  }
+  return list
 }

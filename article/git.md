@@ -1,207 +1,186 @@
 ---
-createTime : 2017/06/28
-author : test
+createTime : 2017/07/13
+author : YYM
 title : git配置及命令介绍
-subtitle: 列出git常用命令及mac bash中便捷配置
+subtitle: git配置及命令介绍
 ---
 
+# Git使用介绍
 
-## 一、设置Shell中Git的颜色和当前所在分支
+## 简介
 
-### 1. cd ~
+* Git是一个分布式版本控制软件, 2005年发布
+* 之前的版本管理工具: CVS、Subversion、SVN
+* 通过Git进行版本控制的软件源代码托管服务的主流网站有: Github、Gitlab、Bitbucket
+* 国产代码托管平台: [码云](https://git.oschina.net/)、[Coding](https://coding.net/)
+* Git工具: 命令行、编辑器集成、Github客户端、Bitbucket客户端(SourceTree)
 
-### 2. vi .bashrc
+> Git很强大，也很简单。全部命令非常多，但完成日常工作只需要掌握 **极其少数** 的命令即可。其他的可以在工作中遇到调整再去学习。
+>
+> 建议初学者使用命令行操作, 使用客户端仅查看变化以便理解git的作用
 
-### 3. 设置文件内容如下，并保存
+## 安装
 
-```
-function parse_git_dirty {
-    local git_status=$(git status 2> /dev/null | tail -n1) || $(git status 2> /dev/null | head -n 2 | tail -n1);
-    if [[ "$git_status" != "" ]]; then
-        local git_now; # 标示
-        if [[ "$git_status" =~ nothing\ to\ commit || "$git_status" =~  Your\ branch\ is\ up\-to\-date\ with ]]; then
-            git_now="=";
-        elif [[ "$git_status" =~ Changes\ not\ staged || "$git_status" =~ no\ changes\ added ]]; then
-            git_now='~';
-        elif [[ "$git_status" =~ Changes\ to\ be\ committed ]]; then #Changes to be committed
-            git_now='*';
-        elif [[ "$git_status" =~ Untracked\ files ]]; then
-            git_now="+";
-        elif [[ "$git_status" =~ Your\ branch\ is\ ahead ]]; then
-            git_now="#";
-        fi
-        echo "${git_now}";
-    fi
-}
+* [Git客户端](https://git-scm.com/download/)
+* Mac用户安装XCode之后执行git命令会提示安装
 
-function git_branch {
-    ref=$(git symbolic-ref HEAD 2> /dev/null) || return;
-    echo "("${ref#refs/heads/}") ";
-}
+## 作用
 
-PS1="[\[\033[1;32m\]\w\[\033[0m\]] \[\033[0m\]\[\033[1;36m\]\$(git_branch)\[\033[0;31m\]\$(parse_git_dirty)\[\033[0m\]$ "
-```
+git的核心作用有两个：文件管理，多人协作。
 
-### 4. 执行 source ./.bashrc
+> 文件管理：git在不断的备份文件(git内部是使用diff存储每次的更改而非真的备份全部)。
+>
+> 多人协作：git通过代码合并、分支管理等功能让多名参与者能同时开发项目。
 
-### 5. 如果是mac，再执行如下命令,每次开机才会自动生效
+贴个图感受下~
 
-```
-echo "[ -r ~/.bashrc ] && source ~/.bashrc" >> .bash_profile
-```
+![Git-Demo](http://oloqdvms7.bkt.clouddn.com/git-demo.png)
 
-## 二、设置Git常用别名
+## 核心概念
 
-> 1./etc/gitconfig 文件：包含了适用于系统所有用户和所有库的值。如果你传递参数选项’--system’ 给 git config，它将明确的读和写这个文件。
+* Workspace 工作区
+* Stage 暂存区
+* Repository 本地仓库
+* Remote 远程仓库
 
-> 2.~/.gitconfig 文件 ：具体到你的用户。你可以通过传递--global 选项使Git 读或写这个特定的文件。
+![关系图](http://oloqdvms7.bkt.clouddn.com/git.png)
 
-> 3.位于git目录的config文件 (也就是 .git/config) ：无论你当前在用的库是什么，特定指向该单一的库。每个级别重写前一个级别的值。因此，在.git/config中的值覆盖了在/etc/gitconfig中的同一个值。
+> 总的来说，可以分为远程和本地。远程用于存储项目的最新状态，而本地用于个人开发。个人可以从远程拉取最新代码，也可以将自己的修改提交到远程。
 
-```
-[alias]
-  s = status
-  st = status
-  sb = status -s -b
-  #############
-  d = diff
-  di = diff
-  dc = diff --cached
-  dk = diff --check
-  dck = diff --cached --check
-  #############
-  c = commit
-  ca = commit -a
-  cm = commit -m
-  ci = commit
-  #############
-  l = log --oneline
-  lg = log --oneline --graph --decorate
-  #############
-  o = checkout
-  co = checkout
-  ob = checkout -b
-  cob = checkout -b
-  #############
-  b = branch
-  bv = branch -vv
-  ba = branch -a
-  bd = branch -d
-  br = branch -r
-  #############
-  f = fetch
-  fo = fetch origin
-  #############
-  m = merge
-  #############
-  ps = push
-  pl = pull
-  pb = pull --rebase
-  psf = push -f
-  psu = push -u
-  plu = pull -u
-  pso = push origin
-  plo = pull origin
-  pbo = pull --rebase origin
-  psfo = push -f origin
-  psuo = push -u origin
-  pluo = pull -u origin
-  #############
-  rb = rebase
-  #############
-  re = reset
-  rh = reset HEAD
-  reh = reset --hard
-  rem = reset --mixed
-  res = reset --soft
-  rehh = reset --hard HEAD
-  remh = reset --mixed HEAD
-  resh = reset --soft HEAD
-  #############
-  w = show
-  #############
-```
+## 术语
 
+以下是一些学习git中会经常遇到的术语
 
-### 三、常用命令介绍
+| 单词 | 释义 | 单词 | 释义 |
+| --- | --- | --- | --- |
+| repository | 版本库 | branch | 分支 |
+| checkout | 撤销 | reset | 重置 |
+| log | 日志 | merge | 合并 |
+| stash | 隐藏 | drop | 放弃 |
+| push | 推送 | pull | 拉取 |
 
-#### 撤销系列
+## Git常用命令
 
-##### untracked撤销
+### 安装和配置
 
-```
-rm -rf [path]
-```
+* git help：git子命令和核心概念一览表
+  * git help [subcommand]：查看指定git子命令的简介
+* git config
+  * git config --list 查看git配置列表
+  * git config -e [--global] 查看编辑git配置文件
+  * git config user.name "YOUR_NAME" 查看/设置用户名(当前项目)
+  * git config user.email "YOUR_EMAIL" 查看/设置用户邮箱(当前项目)
+  * git config --global user.name "YOUR_NAME" 查看/设置用户名(全局)
+  * git config --global user.email "YOUR_EMAIL" 查看/设置用户邮箱(全局)
 
-```
-# 删除 untracked files
-git clean -f
+* vim ~/.gitconfig：git配置文件
 
-# 连 untracked 的目录也一起删掉
-git clean -fd
-```
+### 拉取项目
 
-```
-git checkout --ours [path]
-```
+* git clone [url]
 
-##### add撤销
+> 作为初学者，可以选择去Github去注册账号，然后自己新建一个项目随意折腾。
 
-```
-git reset HEAD [file-name]
-```
+### 文件操作
 
-##### commit撤销
+* git add：添加文件或文件夹
+  * git add .
+  * git add [file1] [file2]
+  * git add [dir1] [dir2]
+* git rm：删除文件或文件夹
+  * git rm .
+  * git rm [file1] [file2]
+  * git rm --cached [file1] [file2] 从版本控制中移除但保留文件
+* git mv：重命名
+  * git mv [file1] [file2]
 
-```
-git reset —soft [commit-id]
-```
+> 有一个很普遍的误解是以为 git add `.` 中的 `.` 是指所有的意思。其实 `.` 是指相对路径，即当前目录。
 
-##### 增补提交（不会产生新的commit）
+### 提交代码
 
-```
-git commit -C HEAD -a --amend
+* git commit：提交指定文件或目录到本地仓库
+  * git commit -m '注释'
+  * git commit [file] [folder] -m '注释'
+  * git commit -am '注释'：提交工作区自上次commit之后的变化，直接到仓库区
+  * git commit --amend -m [message]：使用一次新的commit，替代上一次提交
 
-参数说明
--m “提交的说明”
--a 动把所有已经跟踪过的文件暂存,并提交.(工作目录中修改过的文件都提交到版本库，不需一个一个手动add了)
-–amend 增补提交
--C 复用指定提交的提交留言
--c 打开编辑器在已有的提交基础上编辑修改
+## 撤销
 
-```
+* git checkout
+  * git checkout .
+  * git checkout [file1] [file2]
+  * git checkout [commit_id] [file]
+* git reset
+  * git reset [file1] [file2]
+  * git reset --hard
+  * git reset [commit_id]
+  * git reset --hard [commit_id]
 
-#### stash系列
+## 隐藏
 
-```
-git stash list
-git stash
-git stash show xxx
-git stash drop xxx
-git stash pop
-```
+* git stash
+  * git stash
+  * git stash list
+  * git stash pop
+  * git stash drop
 
-#### push和pull分支默认匹配
-```
-git config --global push.default matching
-git branch --set-upstream-to=origin/master master
-```
-或在.git/config中配置
+> tip: 很容易忘记你曾经隐藏了修改，慎用~
 
-```
- [branch "test_20170209"]
- remote = origin
- merge = refs/heads/test_20170209
-```
+## 查看信息
+
+* git status
+* git diff
+  * git diff：显示工作区和工作区的差异
+  * git diff [file]：查看指定文件改动的地方(工作区与本地仓库文件内容的对比)
+* git log
+  * git log：显示commit历史
+  * git log --stat：显示commit历史，以及每次commit发生变更的文件
+  * git log -p [files]：显示指定文件的每次commit的diff
+  * git log -[number] --pretty --oneline：显示最近number次的log
+* git show
+  * git show [commit_id]：显示指定commit_id的diff
+  * git show [commit_id] [file]：显示指定commit_id下指定文件的diff
+
+### 分支
+
+* git branch
+  * git branch：显示本地分支列表
+  * git branch -r：显示远程分支列表
+  * git branch -a：显示本地分支列表+远程分支列表
+  * git branch [branch_name]：新建分支，不切换分支
+  * git branch [branch_name] [commit_id]：新建分支，并指向指定commit_id
+  * git branch -d [branch_name]：删除分支
+* git checkout
+  * git checkout [branch_name]：切换分支
+  * git checkout -b [branch_name]：新建分支，并切换到该分支
+  * git checkout -：切换到上一次所在分支
+* git cherry-pick
+  * git cherry-pick [commit_id]：将其他分支的commit提交到当前分支
+* git merge
+  * git merge [branch_name]：合并指定分支到当前分支
 
 
+### 远程同步
 
-#### gitignore不起作用解决办法
+* git pull
+  * git pull [remote] [branch_name]：拉取远程仓库的指定分支的代码与当前分支合并
+* git push
+  * git push origin [branch_name]：提交当前分支与远程指定分支合并
+  * git push origin :[branch_name]：删除远程分支
 
-> .gitignore只能忽略那些原来没有被track的文件，如果某些文件已经被纳入了版本管理中，则修改.gitignore是无效的
+> 远程仓库（即`remote`）名一般就是 `origin`
+>
+> 文件(图片除外)操作请尽量使用linux命令
 
-```
-git rm -r --cached .
-git add .
-git commit -m 'update .gitignore'
-```
+### merge_requests
+
+* 当项目参与者比较多，或者有安全性或者别的不想让参与者直接提交代码的时候，可以采用 `merge_requests` 模式。
+* 可以进行 `code review`
+* 这是一种比较推荐的git使用方式，具体使用方式请自行百度，然后找个人一起练习一下就能轻松掌握~
+
+## 参考资料
+
+* [Git 维基百科](https://zh.wikipedia.org/wiki/Git)
+* [Git 百度百科](http://baike.baidu.com/item/GIT/12647237)
+* [Git Pro](https://git-scm.com/book/zh/v2)
+* [Git 常用命令清单 阮一峰](http://www.ruanyifeng.com/blog/2015/12/git-cheat-sheet.html)

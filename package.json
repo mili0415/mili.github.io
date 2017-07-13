@@ -11,7 +11,9 @@
   "dependencies": {
     "@lianjia/zola-core": "0.0.4",
     "showdown": "^1.7.1",
-    "summarize-markdown": "^0.3.1"
+    "summarize-markdown": "^0.3.1",
+    "watch": "^1.0.2",
+    "highlight.js": "^9.12.0"
   },
   "redskull": {
     "port": 6003,
@@ -20,5 +22,8 @@
     "dist": "./dist",
     "openBrowser": false,
     "favico": "./src/favicon.ico"
+  },
+  "devDependencies": {
+    "html-loader": "^0.4.5"
   }
 }

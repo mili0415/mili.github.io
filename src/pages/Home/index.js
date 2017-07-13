@@ -6,17 +6,19 @@
 
 import { React, Page } from 'zola'
 import styles from './index.styl'
+import LeftMenu from '../LeftMenu'
 
-const ARTICLE_LIST = MY_ARTICLE_DATA.slice(0, 5);
+import articleList from 'data/article'
 
 export default class Index extends Page {
   render () {
-    console.log(ARTICLE_LIST)
     return (
-      <section id="main-content">
+      <div>
+        <LeftMenu curUrl="index" />
+        <section id="main-content">
           <section className="wrapper">
             {
-              ARTICLE_LIST.map((v, k) => {
+              articleList.map((v, k) => {
                 return (
                   <div key={k} className="item">
                     <div className="article-header">
@@ -34,7 +36,8 @@ export default class Index extends Page {
               })
             }
           </section>
-      </section>
+        </section>
+      </div>
     )
   }
 }
